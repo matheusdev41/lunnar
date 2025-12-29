@@ -1,30 +1,23 @@
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import api from "../../services/api";
 
-const chats = [
-    { 
-      id: "1", 
-      name: "Maria", 
-      lastMessage: "Oi!",
-      avatar: "https://i.pravatar.cc/150?img=1"
-    },
-    { 
-      id: "2", 
-      name: "João", 
-      lastMessage: "Tudo bem!",
-      avatar: "https://i.pravatar.cc/150?img=2"
-    },
-    { 
-      id: "3", 
-      name: "Grupo Dev", 
-      lastMessage: "Deploy feito",
-      avatar: "https://i.pravatar.cc/150?img=3"
-    },
-];
+
 
 export default function Chatlist() {
     const router = useRouter();
+    const [chats, setChats] = useState<any[]>([]);
+
+    console.log("API ===>", api);
+
+
+    useEffect(() => {
+      api.get("/chats/")
+        .then(res => setChats(res.data))
+        .catch(err => console.log(err))
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -36,8 +29,8 @@ export default function Chatlist() {
             />
             <FlatList
               data={chats}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item}) => (
+              keyExtractor={(item) => String(item.id)}
+              renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() => router.push(`/chat/${item.id}`)}
                   style={styles.flatlist}
@@ -48,7 +41,7 @@ export default function Chatlist() {
                   />
                   <View style={styles.textContainer}>
                     <Text style={styles.text}>{item.name}</Text>
-                    <Text style={styles.text}>{item.lastMessage}</Text>
+                    <Text style={styles.text}>{item.last_message?.content}</Text>
                   </View>
                 </TouchableOpacity>
               )}
