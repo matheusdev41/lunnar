@@ -4,6 +4,7 @@ from .models import Conversation, Message
 
 class MessageSerializer(serializers.ModelSerializer):
     sender_name = serializers.CharField(source="sender.username", read_only=True)
+    is_me = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
@@ -13,8 +14,14 @@ class MessageSerializer(serializers.ModelSerializer):
             'sender_name',
             'content',
             'created_at',
+            'is_me',
         ]
         read_only_fields = ["sender"]
+        
+    def get_is_me(self, obj):
+            return False    
+
+        
 
 class ConversationSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
