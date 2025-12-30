@@ -19,12 +19,16 @@ class MessageSerializer(serializers.ModelSerializer):
         read_only_fields = ["sender"]
         
     def get_is_me(self, obj):
-            return False    
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return obj.sender == request.user
+        return False   
 
         
 
 class ConversationSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
+    photo = serializers.SerializerMethodField()
 
     class Meta:
         model = Conversation
@@ -44,3 +48,9 @@ class ConversationSerializer(serializers.ModelSerializer):
                 "created_at": last.created_at
             }
         return None
+    
+    def get_photo(self, obj):
+         request = self.context.get("request")
+         if obj.photo and request:
+              return request.build_absolute_uri(obj.photo.url)
+         return None

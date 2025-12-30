@@ -13,7 +13,11 @@ class ChatListView(APIView):
     def get(self, request):
         conversations = Conversation.objects.all()
 
-        serializer = ConversationSerializer(conversations, many=True)
+        serializer = ConversationSerializer(
+            conversations, 
+            many=True,
+            context={"request": request}
+        )
         return Response(serializer.data)
     
 class MessageListCreateView(APIView):
@@ -27,7 +31,11 @@ class MessageListCreateView(APIView):
         )
 
         messages = conversation.messages.all()
-        serializer = MessageSerializer(messages, many=True)
+        serializer = MessageSerializer(
+            messages, 
+            many=True,
+            context={"request":request}
+        )
         return Response(serializer.data)
     
     def post(self, request, chat_id):
@@ -37,7 +45,11 @@ class MessageListCreateView(APIView):
             participantes__user=request.user
         )
 
-        serializer = MessageSerializer(data=request.data)
+        serializer = MessageSerializer(
+            data=request.data,
+            context={"request": request}
+        )
+        
         if serializer.is_valid():
             serializer.save(
                 sender=request.user,

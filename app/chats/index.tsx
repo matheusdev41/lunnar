@@ -15,39 +15,58 @@ export default function Chatlist() {
 
     useEffect(() => {
       api.get("/chats/")
-        .then(res => setChats(res.data))
-        .catch(err => console.log(err))
+        .then(res => {
+            console.log("RESPOSTA API => ",res.data);
+            setChats(res.data)
+        })
+        .catch(err => console.log("ERRO API => ",err))
     }, []);
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <Text style={styles.header}>LunnarApp</Text>
+    console.log("CHATS =>", chats);
 
-            <TextInput 
-              placeholder="Pesquise Aqui"
-              style={styles.input}
+    return (
+  <SafeAreaView style={styles.container}>
+    <Text style={styles.header}>LunnarApp</Text>
+
+    <TextInput
+      placeholder="Pesquise Aqui"
+      style={styles.input}
+    />
+
+    {chats.length === 0 ? (
+      <Text style={{ textAlign: "center", marginTop: 20 }}>
+        Nenhuma conversa encontrada
+      </Text>
+    ) : (
+      <FlatList
+        data={chats}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => router.push(`/chat/${item.id}`)}
+            style={styles.flatlist}
+          >
+            <Image
+              source={
+                item.photo
+                  ? { uri: item.photo }
+                  : require("../../assets/images/icon.png")
+              }
+              style={styles.avatar}
             />
-            <FlatList
-              data={chats}
-              keyExtractor={(item) => String(item.id)}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => router.push(`/chat/${item.id}`)}
-                  style={styles.flatlist}
-                >
-                  <Image 
-                    source={{ uri: item.avatar }}
-                    style={styles.avatar}
-                  />
-                  <View style={styles.textContainer}>
-                    <Text style={styles.text}>{item.name}</Text>
-                    <Text style={styles.text}>{item.last_message?.content}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-        </SafeAreaView>
-    );
+
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>{item.name}</Text>
+              <Text style={styles.text}>
+                {item.last_message?.content ?? "Sem mensagens"}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
+    )}
+  </SafeAreaView>
+);
 }
 
 const styles = StyleSheet.create({

@@ -5,27 +5,26 @@ import api from "../../services/api";
 
 
 import ChatHeader from "@/components/ChatHeader";
-
+    
+type Message = {
+    id: number;
+    content: string;
+    is_me: boolean;
+    sender: number;
+    sender_name: string;
+    created_at: string;
+};
 
 export default function Chat() {
-    type Message = {
-        id: number;
-        content: string;
-        is_me: boolean;
-        sender: number;
-        sender_name: string;
-        created_at: string;
-    };
-
-
-    const { id } = useLocalSearchParams();
+   
+    const { id, name, photo } = useLocalSearchParams();
     const [messages, setMessages] = useState<Message[]>([]);
 
     useEffect(() => {
         api.get(`/chats/${id}/messages/`)
-        .then(res => {
-            console.log("MESSAGES: ",res.data)
-            setMessages(res.data)
+        .then((res) => {
+            console.log("MESSAGES: ",res.data);
+            setMessages(res.data);
             })
         .catch(err => console.log(err))
     }, [id]);
@@ -33,8 +32,8 @@ export default function Chat() {
     return (
         <View style={{ flex: 1 }}>
             <ChatHeader
-             name="Cauã Daniel"
-             photo="https://i.pravatar.cc/150?img=3"
+             name={String(name ?? "Chat")}
+             photo={String(photo ?? "")}
             />
             <ImageBackground
                 source={require("@/assets/images/whatsapp.jpg")} 
