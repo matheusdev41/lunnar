@@ -27,7 +27,7 @@ class MessageListCreateView(APIView):
         conversation = get_object_or_404(
             Conversation,
             id=chat_id,
-            participantes__user=request.user
+            #participantes__user=request.user
         )
 
         messages = conversation.messages.all()
@@ -42,7 +42,7 @@ class MessageListCreateView(APIView):
         conversation = get_object_or_404(
             Conversation,
             id=chat_id,
-            participantes__user=request.user
+            #participantes__user=request.user
         )
 
         serializer = MessageSerializer(

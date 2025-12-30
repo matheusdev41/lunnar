@@ -21,12 +21,13 @@ export default function Chat() {
     const [messages, setMessages] = useState<Message[]>([]);
 
     useEffect(() => {
-        api.get(`/chats/${id}/messages/`)
-        .then((res) => {
+        api
+          .get(`/chats/${id}/messages/`)
+          .then((res) => {
             console.log("MESSAGES: ",res.data);
             setMessages(res.data);
-            })
-        .catch(err => console.log(err))
+          })
+          .catch(err => console.log(err));
     }, [id]);
 
     return (
@@ -45,16 +46,15 @@ export default function Chat() {
                     data={messages}
                     keyExtractor={(item) => String(item.id)}
                     renderItem={({ item }) => (
-                    <View style={{
-                        alignSelf: item.is_me? 'flex-end' : 'flex-start',
-                        backgroundColor: item.is_me ? "#DCF8C6" : "#FFF",
-                        padding: 10,
-                        borderRadius: 8,
-                        marginBottom: 8,
-                        maxWidth: "75%",
-                    }}
+                    <View style={[
+                        styles.message,
+                        item.is_me ? styles.myMessage : styles.otherMessage,
+                    ]}
                     >
-                    <Text>{item.content}</Text>                    
+                      {!item.is_me &&(
+                        <Text style={styles.sender}>{item.sender_name}</Text>
+                      )}
+                      <Text>{item.content}</Text>                    
                  </View>
                )} 
             />
@@ -68,4 +68,24 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
-})
+    message: {
+        padding: 10,
+        borderRadius: 8,
+        marginBottom: 8,
+        maxWidth: "75%"
+    },
+    myMessage: {
+        alignSelf: "flex-end",
+        backgroundColor: "#DCE8C6",
+    },
+    otherMessage: {
+        alignSelf: "flex-start",
+        backgroundColor: "#fff",
+    },
+    sender: {
+        fontSize: 12,
+        fontWeight: "bold",
+        marginBottom: 4,
+        color: "#555",
+    },
+});

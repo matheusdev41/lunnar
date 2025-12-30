@@ -43,8 +43,16 @@ export default function Chatlist() {
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => router.push(`/chat/${item.id}`)}
-            style={styles.flatlist}
+            onPress={() => router.push({
+              pathname: "/chat/[id]",
+              params: {
+                id: item.id,
+                name: item.name,
+                photo: item.photo ?? "",
+              },
+            })
+          }
+          style={styles.flatlist}
           >
             <Image
               source={
