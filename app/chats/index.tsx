@@ -11,12 +11,14 @@ export default function Chatlist() {
     const [chats, setChats] = useState<any[]>([]);
 
     console.log("API ===>", api);
+  
 
 
     useEffect(() => {
       api.get("/chats/")
         .then(res => {
             console.log("RESPOSTA API => ",res.data);
+            console.log(res.data);
             setChats(res.data)
         })
         .catch(err => console.log("ERRO API => ",err))

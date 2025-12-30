@@ -8,7 +8,7 @@ from .serializers import ConversationSerializer, MessageSerializer
 
 
 class ChatListView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         conversations = Conversation.objects.all()
@@ -21,13 +21,13 @@ class ChatListView(APIView):
         return Response(serializer.data)
     
 class MessageListCreateView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, chat_id):
         conversation = get_object_or_404(
             Conversation,
             id=chat_id,
-            #participantes__user=request.user
+            participantes__user=request.user
         )
 
         messages = conversation.messages.all()
@@ -42,7 +42,7 @@ class MessageListCreateView(APIView):
         conversation = get_object_or_404(
             Conversation,
             id=chat_id,
-            #participantes__user=request.user
+            participantes__user=request.user
         )
 
         serializer = MessageSerializer(

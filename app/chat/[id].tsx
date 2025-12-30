@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, ImageBackground, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { FlatList, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import api from "../../services/api";
 
 
@@ -15,10 +15,34 @@ type Message = {
     created_at: string;
 };
 
+
+
 export default function Chat() {
-   
+
+    const [text, setText] = useState("");
+    const flatlistRef = useRef<FlatList>(null);
+    
     const { id, name, photo } = useLocalSearchParams();
     const [messages, setMessages] = useState<Message[]>([]);
+
+    const sendMessage = async () => {
+        if (!text.trim()) return;
+
+        try {
+            const res = await api.post(`/chats/${id}/messages/`, {
+                content: text,
+            });
+
+            setMessages((prev) => [...prev, res.data]);
+            setText("");
+
+            setTimeout(() => {
+                flatlistRef.current?.scrollToEnd({ animated: true });
+            }, 100);
+        } catch (err) {
+            console.log("Erro ao enviar mensagem", err);
+        }
+    };
 
     useEffect(() => {
         api
@@ -43,6 +67,7 @@ export default function Chat() {
                 resizeMode="cover"
             >
                     <FlatList<Message>
+                    ref={flatlistRef}
                     data={messages}
                     keyExtractor={(item) => String(item.id)}
                     renderItem={({ item }) => (
@@ -58,6 +83,18 @@ export default function Chat() {
                  </View>
                )} 
             />
+            <View style={styles.inputContainer}>
+                <TextInput 
+                    placeholder="Digite sua mensagem"
+                    value={text}
+                    onChangeText={setText}
+                    style={styles.input}
+                />
+
+                <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
+                    <Text style={styles.sendText}>➤</Text>
+                </TouchableOpacity>
+            </View>
         </ImageBackground>
      </View>
     )
@@ -88,4 +125,31 @@ const styles = StyleSheet.create({
         marginBottom: 4,
         color: "#555",
     },
+    inputContainer: {
+        alignItems:"center",
+        padding: 8,
+        backgroundColor: "#fff",
+        marginBottom: 30,
+        flexDirection: "row"
+    },
+
+    sendButton: {
+        backgroundColor:"#76c091",
+        padding: 12,
+        borderRadius: 50,
+        marginLeft: 8,
+    },
+
+    sendText: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "bold"
+    },
+    input: {
+        flex: 1,
+        borderWidth: 1,
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+    }
 });
